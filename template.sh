@@ -7,11 +7,11 @@ if [[ "${TRACE-0}" == "1" ]]; then
 fi
 
 if [[ "${1-}" =~ ^-*h(elp)?$ || $# -eq 0 ]]; then
-	echo 'Usage: ./$(basename "$0") arg-one arg-two
+	echo "Usage: ./$(basename "$0") arg-one arg-two
 
 This is an awesome bash script to make your life better.
 
-'
+"
     exit
 fi
 
