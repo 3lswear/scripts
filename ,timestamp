@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+shopt -s expand_aliases
+set -o errexit
+set -o nounset
+set -o pipefail
+
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+if [[ "${1-}" =~ ^-*h(elp)?$ || $# -eq 0 ]]; then
+	>&2 echo "
+	Usage: $(basename "$0") <file/dir>
+	OR: $(basename "$0") <file/dir> -d '<date>'
+
+	Добавляет временную отметку к файлу/папке (по умолчанию текущее время).
+	Можно передать определенное время с флагом -d. Например: 
+	> $(basename "$0") file.txt -d @1671721380
+	> $(basename "$0") file.txt -d '13 oct 2022'
+
+"
+    exit
+fi
+
+main() {
+	if [[ ${2:-} == "-d" ]]
+	then
+		now="date +%FT%H%M -d $3"
+	else
+		# now='date +%FT%H%M'
+		now="date +%FT%H%M -d @$(stat "$1" --format "%Y")"
+	fi
+
+
+	src="$1"
+	if [[ "$src" == *.* ]]
+	then
+		dest="${src%.*}@$($now).${src##*.}";
+		mv "$src" "$dest";
+	else
+		mv "$1"{,@"$($now)"};
+	fi
+}
+
+main "$@"
+
+
