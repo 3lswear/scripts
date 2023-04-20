@@ -15,20 +15,24 @@ Find project
     exit
 fi
 
-FD="/usr/bin/fdfind"
-QUERY=$@
+# FD="/usr/bin/fdfind"
+FD="/usr/bin/bfs -E"
+SPECIFIER="-iregex"
+QUERY=".*$@.*"
 if [[ ${0} =~ 'decim' ]]; then
+	IFS_OLD="$IFS"
 	IFS=$'\n'
-	QUERY='(АДЛБ|ИЦАТ) *\. *'$@
+	SPECIFIER="-iregex"
+	QUERY=".*(АДЛБ|ИЦАТ) *\. *.*$@.*"
+	IFS="$IFS_OLD"
 fi
 
 
 main() {
-    "$FD" \
-		--max-depth=1 \
-		--type=d \
-		--hidden \
-		${QUERY} \
+    $FD \
+		-maxdepth 1 \
+		-type d \
+		${SPECIFIER} "${QUERY}" \
 		"/mnt/forso/cert/Документация ИЛ" \
 		"/mnt/forso/cert/Материалы заявителя" \
 		"/mnt/forso/certIA/Документация ИЛ" \
