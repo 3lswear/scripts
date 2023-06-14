@@ -2,14 +2,13 @@
 
 import os
 
-cwd = os.getcwd()
 SEARCH_BYTES = b'\xde\xad\xba\xba'
 BYTES_LEN = 4
 
-for root, dirnames, filenames in os.walk(cwd):
-    for basename in filenames:
-        filename = os.path.join(root, basename)
-        with open(filename, "r+b") as f:
+for root, dirs, basenames in os.walk(os.getcwd()):
+    for basename in basenames:
+        filepath = os.path.join(root, basename)
+        with open(filepath, "r+b") as f:
             buffer = f.read()
 
             markers = []
@@ -35,8 +34,8 @@ for root, dirnames, filenames in os.walk(cwd):
             if markers == []:
                 continue
 
-        print("File:", filename)
-        print("size is: ", find_end)
+        print("File:", filepath)
+        print("size: ", find_end)
         print("markers: ", markers)
 
 
