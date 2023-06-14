@@ -1,2 +1,9 @@
 #!/bin/bash
-explorer.exe `wslpath -aw "$*"`
+# set -x
+
+if [[ "$*" != "" ]]; then
+	WSLPATH=$(wslpath -aw "$*")
+	explorer.exe "$WSLPATH"
+	exit 0
+fi
+exit 1
