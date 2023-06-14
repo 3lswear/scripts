@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 # set -o errexit
 set -o nounset
 set -o pipefail
@@ -38,7 +37,7 @@ else
 	FIND_COMMAND="find . -type f -print0"
 fi
 
-# FIND_COMMAND="find . -type f -print0"
+FIND_COMMAND="find . -type f -print0"
 
 printf "${GREEN}"
 echo "[i] Using command: $FIND_COMMAND"
@@ -58,10 +57,13 @@ fi
 while IFS= read -r -d '' file; do 
 	echo '>' "$file"
 	file_copy="${file%.*}-Copy(1).${file##*.}"
+	if [[ $(basename "$file") != *.* ]]; then
+		file_copy="${file}-Copy(1)"
+	fi
 	if test -f "$file_copy"; then
 		fsize=$(stat --format='%s' "$file")
 		printf "${GREEN}[+] has a copy, size is %'d K${RST}\n" $((fsize/1024))
-		if diff -q "$file" "$file_copy"; then
+		if [[ $(md5sum "$file" | cut -d' ' -f1) == $(md5sum "$file_copy" | cut -d' ' -f1) ]]; then
 			((TOT_SAME++))
 			((TOT_SIZE=TOT_SIZE+"$fsize"))
 			echo -e "${GREEN}[+] files are identical"
@@ -78,5 +80,5 @@ done < <($FIND_COMMAND)
 	printf "${GREEN}"
 	printf "[i] STATS:\n"
 	printf "Space freed:\n%'d K, or %'d M\n" $((TOT_SIZE/1024)) $((TOT_SIZE/1024/1024))
-	printf "Identical files: %'d\nAltered files: %'d\n" "$TOT_SAME" "$TOT_DIFFER"
+	printf "Identical files: %'d\nDifferent files: %'d\n" "$TOT_SAME" "$TOT_DIFFER"
 	printf "${RST}"
