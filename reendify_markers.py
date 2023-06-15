@@ -48,7 +48,8 @@ def print_err():
     print("Error: invalid arguments. Valid: '.', <file>", file=sys.stderr)
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
+    if len(sys.argv) == 2 \
+        and not ((sys.argv[1] == "-h") or (sys.argv[1] == "--help")):
         if sys.argv[1] == '.':
             process_dir(os.getcwd())
         else:
