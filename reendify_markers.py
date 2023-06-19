@@ -2,8 +2,8 @@
 
 import os, sys
 
-SEARCH_BYTES = b'\xde\xad\xba\xba'
-BYTES_LEN = 4
+MAGIC = b'\xde\xad\xba\xba'
+MAGIC_LEN = 4
 
 def process_file(filepath):
     with open(filepath, "r+b") as f:
@@ -14,19 +14,19 @@ def process_file(filepath):
         find_start = int(0)
         find_end = len(buffer)
         while (True):
-            offset = buffer.find(SEARCH_BYTES, find_start, find_end)
+            offset = buffer.find(MAGIC, find_start, find_end)
             if (offset == -1):
                 break
-            find_start = offset + BYTES_LEN
+            find_start = offset + MAGIC_LEN
 
-            marker_bytes = buffer[offset + 4:offset + 8]
+            marker_bytes = buffer[offset + MAGIC_LEN:offset + MAGIC_LEN * 2]
             marker_num = int.from_bytes(marker_bytes, 'big', signed=False)
             markers.append((offset, marker_num))
 
             # flip and write
             f.seek(offset)
-            f.write(SEARCH_BYTES[::-1])
-            f.seek(offset + BYTES_LEN)
+            f.write(MAGIC[::-1])
+            f.seek(offset + MAGIC_LEN)
             f.write(marker_bytes[::-1])
 
         # if markers == []:
@@ -39,7 +39,7 @@ def process_file(filepath):
         return
 
 def process_dir(path):
-    for root, dirs, basenames in os.walk(path):
+    for root, _, basenames in os.walk(path):
         for basename in basenames:
             filepath = os.path.join(root, basename)
             process_file(filepath)
