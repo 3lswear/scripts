@@ -1,6 +1,7 @@
 #!/bin/env python3
 
 import os, sys
+from os.path import isdir, isfile
 
 MAGIC = b'\xde\xad\xba\xba'
 MAGIC_LEN = 4
@@ -45,14 +46,20 @@ def process_dir(path):
             process_file(filepath)
 
 def print_err():
-    print("Error: invalid arguments. Valid: '.', <file>", file=sys.stderr)
+    print("""
+Скрипт для приведения байтов маркеров в ожидаемый для NOP порядок.
+(big endian (SPARC) -> little endian (x86))
+
+Использование: {} <папка с бинарниками>/<файл>
+          """.format(os.path.basename(__file__)), file=sys.stderr)
 
 if __name__ == "__main__":
     if len(sys.argv) == 2 \
         and not ((sys.argv[1] == "-h") or (sys.argv[1] == "--help")):
-        if sys.argv[1] == '.':
-            process_dir(os.getcwd())
-        else:
-            process_file(sys.argv[1])
+        arg = sys.argv[1]
+        if isfile(arg):
+            process_file(arg)
+        elif isdir(arg):
+            process_dir(arg)
     else:
         print_err()
