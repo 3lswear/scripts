@@ -48,7 +48,7 @@ def process_dir(path):
 def print_err():
     print("""
 Скрипт для приведения байтов маркеров в ожидаемый для NOP порядок.
-(big endian (SPARC) -> little endian (x86))
+(big endian (Эльбрус) -> little endian (x86))
 
 Использование: {} <папка с бинарниками>/<файл>
           """.format(os.path.basename(__file__)), file=sys.stderr)
