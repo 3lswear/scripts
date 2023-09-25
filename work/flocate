@@ -1,0 +1,24 @@
+#!/bin/bash
+
+##
+# Interactive search.
+# Usage: `ff` or `ff <folder>`.
+#
+[[ -n $1 ]] && cd $1 # go to provided folder or noop
+SEARCH_COMMAND="plocate -d  ~/winhome/locate/latest.db -i "
+
+selected=$(
+FZF_DEFAULT_COMMAND="plocate -d ~/winhome/locate/latest.db -i \*" fzf \
+  -m \
+  -e \
+  --ansi \
+  --disabled \
+  --reverse \
+  --bind "ctrl-a:select-all" \
+  --bind "f12:execute-silent:(subl -b {})" \
+  --bind 'ctrl-g:execute(TRACE=1 /home/roman/.local/bin/wopen {})'\
+  --bind "change:reload:$SEARCH_COMMAND {q} || true"
+  # --preview "rg -i --pretty --context 2 {q} {}" | cut -d":" -f1,2
+)
+
+[[ -n $selected ]] && echo $selected # open multiple files in editor
