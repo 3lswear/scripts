@@ -13,14 +13,14 @@ echo "> ascii text"
 # fdfind -uu --type=f -x file "{}" | grep -F ': ASCII text, with no line terminators' | cut -d':' -f 1 | sed "s/^/'/;s/$/'/" | xargs -n1 rm -v
 fdfind -uu --type=f -x bash -c 'file -b "$1" | grep -q "ASCII text" && rm -v "$1"' bash "{}"
 
-echo "> just ascii text"
+# echo "> just ascii text"
 # fdfind -uu --type=f -x file "{}"| grep ': ASCII text$' | cut -d':' -f 1 | sed "s/^/'/;s/$/'/" | xargs -n1 rm -v
 
 echo "> very short file"
-fdfind -uu --type=f -x file "{}" | grep ': very short file (no magic)$' | cut -d':' -f 1 | sed "s/^/'/;s/$/'/" | xargs -n1 rm -v
+fdfind -uu --type=f -x bash -c 'file -b "$1" | grep -q "very short file (no magic)" && rm -v "$1"' bash "{}"
 
 echo "> Bourne-Again shell scripts"
-fdfind -uu --type=f -x file "{}" | grep -F ': Bourne-Again shell script' | cut -d':' -f 1 | sed "s/^/'/;s/$/'/" | xargs -n1 rm -v
+fdfind -uu --type=f -x bash -c 'file -b "$1" | grep -q "Bourne-Again shell script" && rm -v "$1"' bash "{}"
 
 echo "> Unicode text"
-fdfind -uu --type=f -x file "{}" | grep -F ': Unicode text' | cut -d':' -f 1 | sed "s/^/'/;s/$/'/" | xargs -n1 rm -v
+fdfind -uu --type=f -x bash -c 'file -b "$1" | grep -q "Unicode text" && rm -v "$1"' bash "{}"
