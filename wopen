@@ -2,8 +2,9 @@
 # set -x
 
 if [[ "$*" != "" ]]; then
+	EXPLORER="${EXPLORER:-explorer.exe}"
 	WSLPATH=$(wslpath -aw "$*")
-	explorer.exe "$WSLPATH"
+	"$EXPLORER" "$WSLPATH"
 	exit 0
 fi
 exit 1
