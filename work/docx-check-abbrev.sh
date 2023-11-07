@@ -32,14 +32,16 @@ awk 'BEGIN{
 
 }
 
+PATH_TO_TIKA="$HOME/winhome/_software/tika-app-2.8.0.jar"
 
 main() {
-	FILE="$@"
+	FILE="$*"
 	TEXTFILE=$(mktemp)
-	java -jar ~/winhome/_software/tika-app-2.8.0.jar --text "$FILE" > "$TEXTFILE"
+	java -jar "$PATH_TO_TIKA" --text "$FILE" > "$TEXTFILE"
 
-	ABBREV=$(rg -i --multiline-dotall --multiline 'перечень\s+сокращений.*?(1.)*объект\s+испытаний' "$TEXTFILE" | \
-		rg --multiline --multiline-dotall --only-matching '\s+[А-Я]{2,7}(\s[А-Я]{2,7})*$' | \
+	ABBREV=$(rg -i --multiline-dotall --multiline 'перечень\s+сокращений\s*$.*объект\s+испытаний'  "$TEXTFILE" | \
+		sed 's/перечень\s\+сокращений//i; s/объект\s\+испытаний//i' | \
+		rg --multiline --multiline-dotall --only-matching '\s*[А-Я]{2,7}(\s+[А-Я]{2,7})*\s*$' | \
 		awk '{$1=$1;print}')
 
 
@@ -56,7 +58,7 @@ main() {
 
 	for word in $ABBREV ;
 	do
-		echo -n $word ""; rg --count-matches "\b$word\b" "$TEXTFILE" || echo -- ;
+		printf "%-15s\033[10G %s\n" "$word" "$(rg --count-matches "\b$word\b" "$TEXTFILE" || echo --)";
 	done
 
 	rm "$TEXTFILE"
