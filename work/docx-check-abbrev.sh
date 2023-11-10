@@ -19,7 +19,7 @@ fi
 TIKA_PATH="$HOME/.local/share/tika-app.jar"
 
 check_deps() {
-	status=0
+	local status=0
 	hash java 2>/dev/null || { echo >&2 "[Error] java не установлен"; status=1; }
 	hash rg 2>/dev/null || { echo >&2 "[Error] ripgrep не установлен"; status=1; }
 	hash awk 2>/dev/null || { echo >&2 "[Error] awk не установлен"; status=1; }
@@ -28,7 +28,7 @@ check_deps() {
 Скачать: \`wget https://dlcdn.apache.org/tika/2.9.1/tika-app-2.9.1.jar -O \$HOME/.local/share/tika-app.jar\` 
 или поменять \$TIKA_PATH файлу в скрипте
 	"; status=1; }
-	if [[ $status == 1 ]]; then 
+	if [[ $status == 1 ]]; then
 		exit 1;
 	fi
 }
