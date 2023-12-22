@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+if [[ "${TRACE-0}" == "1" ]]; then
+    set -o xtrace
+fi
+
+if [[ "${1-}" =~ ^-*h(elp)?$ || $# -eq 0 ]]; then
+	echo "Usage: ./$(basename "$0") database.mdb
+
+получает список избыточных файлов из mdb
+
+"
+    exit
+fi
+
+main() {
+	mdb-sql -H -F -P -d '' "$@" \
+		-i <(echo "select path,name,type from Src where is_marked = 1 AND is_useful = 0;")
+}
+
+main "$@"
