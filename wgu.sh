@@ -15,15 +15,13 @@ This is an awesome bash script to make your life better.
     exit
 fi
 
-cd "$(dirname "$0")"
-
 main() {
 	sudo -v
 	KEYVALS=$(sudo cat /etc/wireguard/wg0.conf | awk '/^# BEGIN_PEER/ {print $3}; /^PublicKey =/ {print $3}')
 	tmp="";
 
-	WG_COLOR_MODE=always
-	local output=$(WG_COLOR_MODE=always sudo -E wg show);
+	local output;
+	output=$(WG_COLOR_MODE=always sudo -E wg show);
 	declare -A peers;
 	local i=0;
 	for line in $KEYVALS; do
@@ -35,7 +33,7 @@ main() {
 		i=$((i + 1))
 	done;
 
-	for key in ${!peers[@]}
+	for key in "${!peers[@]}"
 	do
 		# echo "${key}, ${peers[${key}]}"
 		output=$(printf "%s\n" "$output" | sed "s|${peers[${key}]}|[${key}] ${peers[${key}]}|")
