@@ -22,23 +22,15 @@ main() {
 
 	local output;
 	output=$(WG_COLOR_MODE=always sudo -E wg show);
-	declare -A peers;
 	local i=0;
 	for line in $KEYVALS; do
 		if [[ $((i % 2)) == 0 ]]; then
 			tmp="$line"
 		else
-			peers["$tmp"]="$line";
+			output=$(printf "%s\n" "$output" | sed "s|$line|[$tmp] $line|")
 		fi
 		i=$((i + 1))
 	done;
-
-	for key in "${!peers[@]}"
-	do
-		# echo "${key}, ${peers[${key}]}"
-		output=$(printf "%s\n" "$output" | sed "s|${peers[${key}]}|[${key}] ${peers[${key}]}|")
-	
-	done
 	
 	printf "%s\n" "$output"
 }
