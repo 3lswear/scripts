@@ -4,23 +4,25 @@ if [[ $EUID -ne 0 ]]
   exit 1
 fi
 
+set -o nounset
 set -e
 set -x
 
 export RESTIC_PASSWORD_FILE=/etc/restic/nextcloud.pass
+export RESTIC_COMPRESSION=max
 
 restic -r /media/compraid/restic-repo \
 	--verbose \
+	--exclude='/media/black/nextcloud/data/appdata_*' \
+	--exclude='/srv/nextcloud/volumes/appdata_*' \
 	backup \
-	/srv/nextcloud
+	/media/black/nextcloud/data \
+	/srv/nextcloud \
+	/etc/nginx/conf.d/one*
 
-restic -r /media/compraid/restic-repo \
-	--verbose \
-	--exclude='/media/wd/nextcloud/data/appdata_*' \
-	backup \
-	/media/wd/nextcloud/data
 
 # healthcheck
-curl -m 10 --retry 5 "$HC_URL"
+curl --max-time 10 --retry 5 "$CRO_HEARTBEAT_URL"
+curl --max-time 10 --retry 5 "$CRO_MONITOR_URL?state=complete"
 
 echo "Pinged healthcheck!"
