@@ -19,11 +19,9 @@ main() {
 	while getopts ":p:v:" opt; do
 		case $opt in
 			p)
-				echo "-p was set!" >&2
 				PRESET="$OPTARG"
 				;;
 			v)
-				echo "-v was set!" >&2
 				MINVMAF="$OPTARG"
 				;;
 			\?)
