@@ -7,7 +7,7 @@ if [[ "${TRACE-0}" == "1" ]]; then
 fi
 
 if [[ "${1-}" =~ ^-*h(elp)?$ ]]; then
-	echo "Usage: ./$(basename "$0") -p PRESET -v VMAF FILE
+	echo "Usage: ./$(basename "$0") [-A | -E] -p PRESET [-v VMAF | -c CRF] FILE
 
 Reencode with ab-av1 to save space.
 
@@ -16,13 +16,22 @@ Reencode with ab-av1 to save space.
 fi
 
 main() {
-	while getopts ":p:v:" opt; do
+	while getopts ":AEp:v:c:" opt; do
 		case $opt in
+			A)
+				MODE=auto-encode
+				;;
+			E)
+				MODE=encode
+				;;
 			p)
 				PRESET="$OPTARG"
 				;;
 			v)
 				MINVMAF="$OPTARG"
+				;;
+			c)
+				CRF="$OPTARG"
 				;;
 			\?)
 				echo "Invalid option: -$OPTARG" >&2
@@ -47,10 +56,15 @@ main() {
 	fi
 	TMP_BASE="${IN_BASE%.*}.TMP.$EXT"
 
-	# RUST_LOG=ab_av1=info ~/.cargo/bin/ab-av1 auto-encode \
-	~/.cargo/bin/ab-av1 auto-encode \
+	if [[ "$MODE" == "auto-encode" ]]; then 
+		OPTION=(--min-vmaf $MINVMAF)
+	else
+		OPTION=(--crf $CRF)
+	fi
+	# ~/.cargo/bin/ab-av1 "$MODE" \
+	RUST_LOG=ab_av1=info ~/.cargo/bin/ab-av1 "$MODE" \
 		--preset "$PRESET" \
-		--min-vmaf "$MINVMAF" \
+		"${OPTION[@]}" \
 		-i "$IN" \
 		-o "$DIR/$TMP_BASE" && \
 		mv "$DIR/$TMP_BASE" "$OUT"
