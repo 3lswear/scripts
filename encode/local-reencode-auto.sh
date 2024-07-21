@@ -57,12 +57,14 @@ main() {
 	TMP_BASE="${IN_BASE%.*}.TMP.$EXT"
 
 	if [[ "$MODE" == "auto-encode" ]]; then 
-		OPTION=(--min-vmaf $MINVMAF)
+		OPTION=(--min-vmaf "$MINVMAF" --min-crf 5 --max-encoded-percent 33)
+		# OPTION=(--min-vmaf "$MINVMAF" --min-crf 5 --max-encoded-percent 35)
 	else
-		OPTION=(--crf $CRF)
+		OPTION=(--crf "$CRF")
 	fi
-	# ~/.cargo/bin/ab-av1 "$MODE" \
-	RUST_LOG=ab_av1=info ~/.cargo/bin/ab-av1 "$MODE" \
+	renice -n 15 -p $$
+	# RUST_LOG=ab_av1=info ~/.cargo/bin/ab-av1 "$MODE" \
+	ab-av1 "$MODE" \
 		--preset "$PRESET" \
 		"${OPTION[@]}" \
 		-i "$IN" \
