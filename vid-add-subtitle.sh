@@ -23,13 +23,14 @@ main() {
 		PROMPT="Hello."
 	fi
 
-	TMPDIR=$(mktemp -d)
+	IN_FILE="$1"
+	TMPDIR="/var/tmp/subt-$(md5sum "$IN_FILE"  | cut -d' ' -f1)"
+	mkdir -p "$TMPDIR"
 	echo "TMPDIR is $TMPDIR"
 	echo "T_LANG is [$T_LANG], PROMPT is [$PROMPT]"
-	IN_FILE="$1"
 	OUT_FILE=new_$(basename "$IN_FILE")
 	AUDIO=audio_$(basename "$IN_FILE").wav
-	ffmpeg -i "$IN_FILE" -vn -ar 16000 -ac 1 -c:a pcm_s16le "$TMPDIR/$AUDIO"
+	ffmpeg -n -i "$IN_FILE" -vn -ar 16000 -ac 1 -c:a pcm_s16le "$TMPDIR/$AUDIO"
 	SUB_FILE="${AUDIO/%\.wav/\.srt}"
 	whisper-ctranslate2 --model large-v2 \
 		--initial_prompt "$PROMPT" \
